@@ -61,8 +61,8 @@ after_success:
     cd ${GOPATH}/src/${TRAVIS_GO_IMPORT_PATH}/test/fabric-sdk-go &&
     rm -rf .git && mv $HOME/fabric-sdk-go-patched/.git . &&
     git reset README.md && git checkout -- README.md &&
-    git config user.name "Travis-CI" &&
-    git commit -a -m "based on https://github.com/ilyapt/fabric-certstore/commit/${TRAVIS_COMMIT}" > /dev/null &&
+    git config user.name "Travis-CI" && git add . &&
+    git commit -m "based on https://github.com/ilyapt/fabric-certstore/commit/${TRAVIS_COMMIT}" > /dev/null &&
     git push origin master
 
 after_script:
