@@ -32,6 +32,7 @@ install:
     git clone --single-branch --branch v1.0.0-beta1 https://github.com/hyperledger/fabric-sdk-go &&
     cd fabric-sdk-go && git apply ${GOPATH}/src/${TRAVIS_GO_IMPORT_PATH}/sdk.patch
 
+
 before_script:
   - cd $HOME/fabric-samples/first-network && echo y | ./byfn.sh up
 
@@ -45,9 +46,28 @@ script:
     golang:latest
     go test -v -failfast ./main_test.go
 
+after_success:
+  - >
+    docker tag hyperledger/fabric-peer ilyapt/patched-fabric-peer &&
+    docker tag hyperledger/fabric-orderer ilyapt/patched-fabric-orderer &&
+    echo "$DOCKER_PASSWD" | docker login -u ilyapt --password-stdin &&
+    docker push ilyapt/patched-fabric-peer && docker push ilyapt/patched-fabric-orderer &&
+
+    mkdir -p $HOME/.ssh && echo "$DEPLOY_SSH_KEY" | base64 -d -w 0 > $HOME/.ssh/id_rsa &&
+    chmod 400 $HOME/.ssh/id_rsa &&
+    ssh-keyscan -t rsa github.com > $HOME/.ssh/known_hosts &&
+    cd $HOME && git clone -n git@github.com:ilyapt/fabric-sdk-go-patched.git
+
+    cd ${GOPATH}/src/${TRAVIS_GO_IMPORT_PATH}/test/fabric-sdk-go &&
+    rm -rf .git && mv $HOME/fabric-sdk-go-patched/.git . &&
+    git reset README.md && git checkout -- README.md &&
+    git config user.name "Travis-CI" && git add . &&
+    git commit -m "based on https://github.com/ilyapt/fabric-certstore/commit/${TRAVIS_COMMIT}" &&
+    git push origin master
+
 after_script:
   - >
     mkdir -p $HOME/logs &&
     for x in `docker ps -a --format '{{.Names}}'`; do docker logs $x > $HOME/logs/$x.log 2>&1; done &&
     tar cfz $HOME/logs/logs.tgz $HOME/logs/*.log &&
-    rm -rf $HOME/logs/*.log
+    rm -rf $HOME/logs/*.log &&
