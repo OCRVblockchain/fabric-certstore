@@ -54,16 +54,15 @@ publish_sdk:
 
 	# Download and move repo, 
 	@cd $(HOME) && git clone -n git@github.com:ilyapt/fabric-sdk-go-patched.git
-	@cd $(TRAVIS_HOME)/test/fabric-sdk-go
-	@rm -rf .git && mv $(HOME)/fabric-sdk-go-patched/.git .
-	@git reset README.md && git checkout -- README.md
-
-	@git config user.name "Travis-CI" && git add .
-	@git commit -m "based on https://github.com/ilyapt/fabric-certstore/commit/$(TRAVIS_COMMIT)"
-	@git push origin master
+	@cd $(TRAVIS_HOME)/test/fabric-sdk-go && \
+		rm -rf .git && mv $(HOME)/fabric-sdk-go-patched/.git . && \
+		git reset README.md && git checkout -- README.md && \
+		git config user.name "Travis-CI" && git add . && \
+		git commit -m "based on https://github.com/ilyapt/fabric-certstore/commit/$(TRAVIS_COMMIT)" && \
+		git push origin master
 
 store_logs:
 	@mkdir -p $(HOME)/logs
 	@for x in `docker ps -a --format '{{.Names}}'`; do docker logs $(x) > $(HOME)/logs/$(x).log 2>&1; done
-	@tar cfz $(HOME)/logs/logs.tgz $(HOME)/logs/*.log
+	@cd $(HOME)/logs/ && tar cfz logs.tgz *.log
 	@rm -rf $(HOME)/logs/*.log
