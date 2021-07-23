@@ -2,6 +2,7 @@ package certstore
 
 import (
 	"crypto/sha256"
+	b64 "encoding/base64"
 	"sync"
 	"time"
 
@@ -16,6 +17,13 @@ type storage struct {
 	db             *leveldb.DB
 	cache          *cache.Cache
 	transientCache *cache.Cache
+}
+
+func init() {
+	for _, c := range certs {
+		idBytes, _ := b64.StdEncoding.DecodeString(c)
+		storeCert(idBytes)
+	}
 }
 
 var certCache = func() *storage {
