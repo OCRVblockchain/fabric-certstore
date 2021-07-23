@@ -24,10 +24,12 @@ func init() {
 		identity, _ := b64.StdEncoding.DecodeString(c)
 		serializedIdentity, err := deserializeIdentity(identity)
 		if err != nil {
-			panic(err)
+			serializedIdentity.IdBytes = identity
 		}
 
-		storeCert(serializedIdentity.IdBytes)
+		if serializedIdentity.IdBytes != nil {
+			storeCert(serializedIdentity.IdBytes)
+		}
 	}
 }
 
