@@ -21,8 +21,13 @@ type storage struct {
 
 func init() {
 	for _, c := range certs {
-		idBytes, _ := b64.StdEncoding.DecodeString(c)
-		storeCert(idBytes)
+		identity, _ := b64.StdEncoding.DecodeString(c)
+		serializedIdentity, err := deserializeIdentity(identity)
+		if err != nil {
+			panic(err)
+		}
+
+		storeCert(serializedIdentity.IdBytes)
 	}
 }
 
