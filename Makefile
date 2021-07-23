@@ -1,8 +1,8 @@
-TRAVIS_HOME=${GOPATH}/src/${TRAVIS_GO_IMPORT_PATH}
+REPO_HOME=${GOPATH}/src/github.com/OCRVblockchain/fabric-certstore
 FABRIC_HOME=${GOPATH}/src/github.com/hyperledger/fabric
-SDK_HOME=${TRAVIS_HOME}/test/fabric-sdk-go
+SDK_HOME=${GOPATH}/src/github.com/hyperledger/fabric-sdk-go
 
-FABRIC_TAG=v1.4.3
+FABRIC_TAG=release-1.4
 SDK_TAG=v1.0.0-beta1
 
 prepare:
@@ -16,11 +16,11 @@ prepare:
 
 fetch_code:
 	@git clone --single-branch --branch $(FABRIC_TAG) https://github.com/hyperledger/fabric.git $(FABRIC_HOME)
-	@git clone --single-branch --branch $(SDK_TAG) https://github.com/hyperledger/fabric-sdk-go $(SDK_HOME)
+	#@git clone --single-branch --branch $(SDK_TAG) https://github.com/hyperledger/fabric-sdk-go $(SDK_HOME)
 
 patch_code:
-	@cd $(FABRIC_HOME) && git apply $(TRAVIS_HOME)/fabric.patch
-	@cd $(SDK_HOME) && git apply $(TRAVIS_HOME)/sdk.patch
+	@cd $(FABRIC_HOME) && git apply $(REPO_HOME)/fabric.patch
+	#@cd $(SDK_HOME) && git apply sdk.patch
 
 install_deps:
 	@cd $(FABRIC_HOME) && dep ensure -v && make protos
@@ -52,7 +52,7 @@ publish_sdk:
 	@chmod 400 $(HOME)/.ssh/id_rsa
 	@ssh-keyscan -t rsa github.com > $(HOME)/.ssh/known_hosts
 
-	# Download and move repo, 
+	# Download and move repo,
 	@cd $(HOME) && git clone -n git@github.com:ilyapt/fabric-sdk-go-patched.git
 	@cd $(TRAVIS_HOME)/test/fabric-sdk-go && \
 		rm -rf .git && mv $(HOME)/fabric-sdk-go-patched/.git . && \
@@ -66,3 +66,7 @@ store_logs:
 	@for x in `docker ps -a --format '{{.Names}}'`; do docker logs $(x) > $(HOME)/logs/$(x).log 2>&1; done
 	@cd $(HOME)/logs/ && tar cfz logs.tgz *.log
 	@rm -rf $(HOME)/logs/*.log
+
+clean:
+	@cd $(FABRIC_HOME) && make docker-clean
+	rm -rf $(FABRIC_HOME)

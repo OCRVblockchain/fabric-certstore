@@ -1,10 +1,10 @@
 package certstore
 
 import (
+	"github.com/OCRVblockchain/fabric/protos/common"
+	"github.com/OCRVblockchain/fabric/protos/msp"
+	"github.com/OCRVblockchain/fabric/protos/peer"
 	"github.com/golang/protobuf/proto"
-	"github.com/hyperledger/fabric/protos/common"
-	"github.com/hyperledger/fabric/protos/msp"
-	"github.com/hyperledger/fabric/protos/peer"
 )
 
 func deserializeIdentity(identity []byte) (*msp.SerializedIdentity, error) {
