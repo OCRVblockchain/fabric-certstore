@@ -3,7 +3,7 @@ module github.com/OCRVblockchain/fabric-certstore
 go 1.16
 
 require (
-	github.com/OCRVblockchain/fabric v1.4.12
+	github.com/OCRVblockchain/fabric v1.4.13-0.20210723113753-53a0356eab66 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/hyperledger/fabric v1.4.12 // indirect
 	github.com/miekg/pkcs11 v1.0.3 // indirect
