@@ -77,10 +77,17 @@ func RemoveCertIfCached(identityBytes []byte) []byte {
 
 // StoreFromTransientMap stores certificate from TransientMap to temporary cache
 func StoreFromTransientMap(p []byte) {
+
+	fmt.Println("************ DEBUG ************")
+
 	ppp := &peer.ChaincodeProposalPayload{}
 	if err := proto.Unmarshal(p, ppp); err != nil {
 		return
 	}
+
+	fmt.Println("ChaincodeProposalPayload:", ppp)
+	fmt.Println("TransientMap:", ppp.TransientMap)
+
 	if ppp.TransientMap == nil {
 		return
 	}
