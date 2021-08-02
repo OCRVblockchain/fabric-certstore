@@ -2,6 +2,7 @@ package certstore
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/common/flogging"
@@ -10,10 +11,13 @@ import (
 	"github.com/patrickmn/go-cache"
 )
 
-var logger = flogging.MustGetLogger("certstor")
+var logger = flogging.MustGetLogger("certstore")
 
 // StoreCertsFromEnvelope extracts all certificates from envelope and stores them
 func StoreCertsFromEnvelope(payload []byte) {
+
+	fmt.Println("************ DEBUG ************")
+
 	sID, tx, err := extractPayload(payload)
 	if err != nil {
 		logger.Warn(err)
@@ -24,6 +28,9 @@ func StoreCertsFromEnvelope(payload []byte) {
 	}
 
 	for _, a := range tx.Actions {
+
+		fmt.Println("ACTION:", a)
+
 		sID, err := identityFromSigHeader(a.Header)
 		if err != nil {
 			logger.Warn(err)
@@ -33,6 +40,9 @@ func StoreCertsFromEnvelope(payload []byte) {
 			storeCert(sID.IdBytes)
 		}
 		for _, x := range extractEndorsements(a.Payload) {
+
+			fmt.Println("ENDORSER:", x.Endorser)
+
 			sID, err := deserializeIdentity(x.Endorser)
 			if err != nil {
 				logger.Warn(err)
