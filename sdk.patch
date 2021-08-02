@@ -170,7 +170,7 @@ index effd8c83..f1188c87 100644
  	CCFilter      invoke.CCFilter
 +	WithoutCert   bool
  }
- 
+
  // RequestOption func for each Opts argument
 @@ -163,3 +164,10 @@ func WithChaincodeFilter(ccFilter invoke.CCFilter) RequestOption {
  		return nil
@@ -193,7 +193,7 @@ index 6157317f..d6324ad8 100644
  	CCFilter      CCFilter
 +	WithoutCert   bool
  }
- 
+
  // Request contains the parameters to execute transaction
 diff --git a/pkg/client/channel/invoke/signature.go b/pkg/client/channel/invoke/signature.go
 index bc7ab397..4df753ae 100644
@@ -206,7 +206,7 @@ index bc7ab397..4df753ae 100644
 -
 -	"github.com/pkg/errors"
  )
- 
+
  //NewSignatureValidationHandler returns a handler that validates an endorsement
 @@ -26,11 +24,11 @@ type SignatureValidationHandler struct {
  //Handle for Filtering proposal response
@@ -222,7 +222,7 @@ index bc7ab397..4df753ae 100644
 +	//	requestContext.Error = errors.WithMessage(err, "signature validation failed")
 +	//	return
 +	// }
- 
+
  	// Delegate to next step if any
  	if f.next != nil {
 diff --git a/pkg/client/channel/invoke/txnhandler.go b/pkg/client/channel/invoke/txnhandler.go
@@ -232,7 +232,7 @@ index 83badef2..b92fd3e2 100644
 @@ -9,6 +9,8 @@ package invoke
  import (
  	"bytes"
- 
+
 +	"github.com/hyperledger/fabric-sdk-go/certstore"
 +
  	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/status"
@@ -241,7 +241,7 @@ index 83badef2..b92fd3e2 100644
 @@ -45,6 +47,17 @@ func (e *EndorsementHandler) Handle(requestContext *RequestContext, clientContex
  		TxnHeaderOpts = e.headerOptsProvider()
  	}
- 
+
 +	if requestContext.Opts.WithoutCert {
 +		creator, cert := certstore.MakeCreatorAndCert(requestContext.Ctx)
 +		if creator != nil && cert != nil {

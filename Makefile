@@ -3,14 +3,12 @@ FABRIC_HOME=${GOPATH}/src/github.com/hyperledger/fabric
 SDK_HOME=${GOPATH}/src/github.com/hyperledger/fabric-sdk-go
 
 FABRIC_TAG=release-1.4
-SDK_TAG=v1.0.0-beta1
+SDK_TAG=v1.0.0
 
 prepare:
 	@docker pull golang:latest
 	@docker pull hyperledger/fabric-tools:latest
 	@docker pull hyperledger/fabric-baseos:amd64-0.4.15
-	# Install golang dep
-	@curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 	# Install fabric-samples
 	@cd $(HOME) && curl -sSL http://bit.ly/2ysbOFE | bash -s -- '-d'
 
