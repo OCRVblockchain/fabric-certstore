@@ -85,8 +85,8 @@ func StoreFromTransientMap(p []byte) {
 		return
 	}
 
-	fmt.Println("ChaincodeProposalPayload:", ppp)
-	fmt.Println("TransientMap:", ppp.TransientMap)
+	//fmt.Println("ChaincodeProposalPayload:", ppp)
+	fmt.Println("TransientMap CERT:", ppp.TransientMap["cert"])
 
 	if ppp.TransientMap == nil {
 		return
