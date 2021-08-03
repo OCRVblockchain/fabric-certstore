@@ -2,15 +2,15 @@ package certstore
 
 import (
 	"bytes"
+	"fmt"
 
-	"github.com/OCRVblockchain/fabric/common/flogging"
-	"github.com/OCRVblockchain/fabric/protos/msp"
-	"github.com/OCRVblockchain/fabric/protos/peer"
 	"github.com/golang/protobuf/proto"
-	"github.com/patrickmn/go-cache"
+	"github.com/hyperledger/fabric/common/flogging"
+	"github.com/hyperledger/fabric/protos/msp"
+	"github.com/hyperledger/fabric/protos/peer"
 )
 
-var logger = flogging.MustGetLogger("certstor")
+var logger = flogging.MustGetLogger("certstore")
 
 // StoreCertsFromEnvelope extracts all certificates from envelope and stores them
 func StoreCertsFromEnvelope(payload []byte) {
@@ -75,10 +75,7 @@ func StoreFromTransientMap(p []byte) {
 		return
 	}
 	if cert, ok := ppp.TransientMap["cert"]; ok {
-		certCache.Lock()
-		defer certCache.Unlock()
-		id := makeID(cert)
-		certCache.transientCache.Add(string(id), cert, cache.DefaultExpiration)
+		storeCert(cert)
 	}
 }
 

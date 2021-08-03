@@ -10,7 +10,7 @@ import (
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
-const dbFile = ".cert_cache"
+const dbFile = "/var/tmp/.cert_cache"
 
 type storage struct {
 	sync.RWMutex
