@@ -6,8 +6,8 @@ COPY . .
 RUN cd $FABRIC_ROOT \
     && git apply $GOPATH/src/github.com/OCRVblockchain/fabric-certstore/fabric.patch
 
-COPY payload/protoc-gen-go /usr/local/bin/
-ADD payload/gotools.tar.bz2 /usr/local/bin/
+COPY tools/protoc-gen-go /usr/local/bin/
+ADD tools/gotools.tar.bz2 /usr/local/bin/
 
 COPY --from=hyperledger/fabric-baseimage:amd64-0.4.22 /usr/bin/protoc /usr/local/bin/
 COPY --from=hyperledger/fabric-baseimage:amd64-0.4.22 /usr/lib/ /usr/local/lib/
@@ -19,14 +19,9 @@ RUN export LD_LIBRARY_PATH=/usr/local/lib \
 RUN go get -u "github.com/patrickmn/go-cache"
 RUN go get -u "github.com/syndtr/goleveldb/leveldb"
 
-ENV ORDERER_GENERAL_LOCALMSPDIR $FABRIC_CFG_PATH/msp
-ENV ORDERER_GENERAL_LISTENADDRESS 0.0.0.0
+RUN cd $FABRIC_ROOT/peer \
+    && go install -tags "experimental" -ldflags "$LD_FLAGS" \
+    && go clean
 
-RUN mkdir -p $FABRIC_CFG_PATH $ORDERER_GENERAL_LOCALMSPDIR
-
-RUN cd $FABRIC_ROOT/orderer \
-        && CGO_CFLAGS=" " go install -tags "experimental" -ldflags "$LD_FLAGS -linkmode external -extldflags '-static -lpthread'" \
-        && go clean
-
-EXPOSE 7050
+EXPOSE 7051
 CMD tail -f /dev/null

@@ -13,9 +13,8 @@ const dbFile = ".cert_cache"
 
 type storage struct {
 	sync.RWMutex
-	db             *leveldb.DB
-	cache          *cache.Cache
-	transientCache *cache.Cache
+	db    *leveldb.DB
+	cache *cache.Cache
 }
 
 var certCache = func() *storage {
@@ -23,7 +22,7 @@ var certCache = func() *storage {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	return &storage{db: db, cache: cache.New(5*time.Minute, 10*time.Minute), transientCache: cache.New(1*time.Minute, 2*time.Minute)}
+	return &storage{db: db, cache: cache.New(5*time.Minute, 10*time.Minute)}
 }()
 
 func storeCert(cert []byte) {
@@ -33,7 +32,7 @@ func storeCert(cert []byte) {
 
 	exists, err := certCache.db.Has(id, nil)
 	if err != nil {
-		return
+		logger.Warn(err)
 	}
 	if !exists {
 		if err := certCache.db.Put(id, cert, nil); err != nil {
@@ -51,16 +50,6 @@ func getCert(id []byte) ([]byte, error) {
 		return cert.([]byte), nil
 	}
 
-	exists, err := certCache.db.Has(id, nil)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
-		if cert, exists := certCache.transientCache.Get(string(id)); exists {
-			return cert.([]byte), nil
-		}
-		return nil, nil
-	}
 	return certCache.db.Get(id, nil)
 }
 
