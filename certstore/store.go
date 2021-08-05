@@ -30,10 +30,17 @@ func storeCert(cert []byte) {
 	certCache.Lock()
 	defer certCache.Unlock()
 	id := makeID(cert)
-	if err := certCache.db.Put(id, cert, nil); err != nil {
-		logger.Warn(err)
+
+	exists, err := certCache.db.Has(id, nil)
+	if err != nil {
+		return
 	}
-	certCache.cache.Add(string(id), cert, cache.DefaultExpiration)
+	if !exists {
+		if err := certCache.db.Put(id, cert, nil); err != nil {
+			logger.Warn(err)
+		}
+		certCache.cache.Add(string(id), cert, cache.DefaultExpiration)
+	}
 }
 
 func getCert(id []byte) ([]byte, error) {
