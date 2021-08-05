@@ -10,7 +10,7 @@ import (
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
-const dbFile = "/var/tmp/.cert_cache"
+const dbFile = ".cert_cache"
 
 type storage struct {
 	sync.RWMutex
@@ -18,20 +18,6 @@ type storage struct {
 	cache          *cache.Cache
 	transientCache *cache.Cache
 }
-
-//func init() {
-//	for _, c := range certs {
-//		identity, _ := b64.StdEncoding.DecodeString(c)
-//		serializedIdentity, err := deserializeIdentity(identity)
-//		if err != nil {
-//			serializedIdentity.IdBytes = identity
-//		}
-//
-//		if serializedIdentity.IdBytes != nil {
-//			storeCert(serializedIdentity.IdBytes)
-//		}
-//	}
-//}
 
 var certCache = func() *storage {
 	db, err := leveldb.OpenFile(dbFile, nil)
