@@ -2,7 +2,6 @@ package certstore
 
 import (
 	"crypto/sha256"
-	//b64 "encoding/base64"
 	"sync"
 	"time"
 

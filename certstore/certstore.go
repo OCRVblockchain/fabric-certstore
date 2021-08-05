@@ -2,7 +2,6 @@ package certstore
 
 import (
 	"bytes"
-	"fmt"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/common/flogging"
