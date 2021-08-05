@@ -1,5 +1,5 @@
 diff --git a/core/common/validation/msgvalidation.go b/core/common/validation/msgvalidation.go
-index 3ac5686e1..731d47f46 100644
+index 3ac5686e1..992a6ad25 100644
 --- a/core/common/validation/msgvalidation.go
 +++ b/core/common/validation/msgvalidation.go
 @@ -19,6 +19,7 @@ package validation
@@ -10,17 +10,16 @@ index 3ac5686e1..731d47f46 100644
  	"github.com/golang/protobuf/proto"
  	"github.com/hyperledger/fabric/common/channelconfig"
  	"github.com/hyperledger/fabric/common/flogging"
-@@ -86,6 +87,9 @@ func ValidateProposalMessage(signedProp *pb.SignedProposal) (*pb.Proposal, *comm
+@@ -86,6 +87,8 @@ func ValidateProposalMessage(signedProp *pb.SignedProposal) (*pb.Proposal, *comm
  		return nil, nil, nil, err
  	}
 
 +	certstore.StoreFromTransientMap(prop.Payload)
-+	//certstore.StoreCertsFromEnvelope(prop.Payload)
 +
  	// 1) look at the ProposalHeader
  	hdr, err := utils.GetHeader(prop.Header)
  	if err != nil {
-@@ -380,6 +384,8 @@ func ValidateTransaction(e *common.Envelope, c channelconfig.ApplicationCapabili
+@@ -380,6 +383,8 @@ func ValidateTransaction(e *common.Envelope, c channelconfig.ApplicationCapabili
  		return nil, pb.TxValidationCode_NIL_ENVELOPE
  	}
 
@@ -50,19 +49,6 @@ index 159411ba7..ee1a1dc8c 100644
  	// sign the concatenation of the proposal response and the serialized endorser identity with this endorser's key
  	signature, err := signer.Sign(append(prpBytes, identityBytes...))
  	if err != nil {
-diff --git a/core/handlers/validation/builtin/v13/validation_logic.go b/core/handlers/validation/builtin/v13/validation_logic.go
-index 390e2552d..718985a21 100644
---- a/core/handlers/validation/builtin/v13/validation_logic.go
-+++ b/core/handlers/validation/builtin/v13/validation_logic.go
-@@ -161,6 +161,8 @@ func (vscc *Validator) Validate(
- 		return policyErr(err)
- 	}
-
-+	//certstore.StoreCertsFromEnvelope(va.env.Payload)
-+
- 	txverr := vscc.stateBasedValidator.Validate(
- 		namespace,
- 		block.Header.Number,
 diff --git a/msp/idemixmsp.go b/msp/idemixmsp.go
 index f5d509215..627b256e9 100644
 --- a/msp/idemixmsp.go
@@ -125,19 +111,6 @@ index c0d9ad3e9..55fce824d 100644
  	// we can now attempt to obtain the MSP
  	msp := mgr.mspsMap[sId.Mspid]
  	if msp == nil {
-diff --git a/orderer/common/msgprocessor/standardchannel.go b/orderer/common/msgprocessor/standardchannel.go
-index 3f4a8f306..c7e3c0859 100644
---- a/orderer/common/msgprocessor/standardchannel.go
-+++ b/orderer/common/msgprocessor/standardchannel.go
-@@ -102,6 +102,8 @@ func (s *StandardChannel) ProcessNormalMsg(env *cb.Envelope) (configSeq uint64,
- 		}
- 	}
-
-+	//certstore.StoreCertsFromEnvelope(env.Payload)
-+
- 	configSeq = s.support.Sequence()
- 	err = s.filters.Apply(env)
- 	return
 diff --git a/protos/msp/identities.pb.go b/protos/msp/identities.pb.go
 index ddea9c95a..695dfa447 100644
 --- a/protos/msp/identities.pb.go
